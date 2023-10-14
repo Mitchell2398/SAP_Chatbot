@@ -42,13 +42,13 @@ export default function Chatbot() {
     // Disable the submit button
     setSubmitting(true);
 
+    setInputValue(""); // Clear the input field immediately
     sendMessage(`User: ${userMessage}`, "user");
 
     // You can use the ChatGPT API to generate responses based on user input.
     const response = await generateChatResponse(userMessage);
     sendMessage(`${response}`, "ai");
 
-    setInputValue(""); // Clear the input field immediately
     // Reset the submitting state
     setSubmitting(false);
   };
@@ -67,7 +67,8 @@ export default function Chatbot() {
                         SAPassist: I am sorry to hear that, can you describe the different clicks you made that lead to the error message 
                         User: 1. I clicked on team members from the home page, 2. I then selected on the team members drop down menu, 3. I seleted team member which resulted in error message: 577 "cannot add team member"
                         SAPassist: I understand, before I generate a ticket for you, does a SAP support engineer have permission to make the necessary configuration changes?
-                        User: Yes `;
+                        User: Yes ` + messages.map((message) => message.text).join("\n") +
+                        `\n\nPlease continue this conversation from where ti left off.`;
                         
 
       const response = await openai.chat.completions.create({
