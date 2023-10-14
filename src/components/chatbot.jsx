@@ -126,7 +126,7 @@ export default function Chatbot() {
           disabled={submitting}
         >
           {submitting ? (
-            "Submitting..."
+            <></>
           ) : (
             <img
               src="/src/assets/send-btn-icon.png"
