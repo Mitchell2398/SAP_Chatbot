@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import React, { useState, useEffect } from "react";
+import "./chatbot.css";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -126,7 +127,11 @@ export default function Chatbot() {
           disabled={submitting}
         >
           {submitting ? (
-            <></>
+            <div class="spinner">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
           ) : (
             <img
               src="/src/assets/send-btn-icon.png"
