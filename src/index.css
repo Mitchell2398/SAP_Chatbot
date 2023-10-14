@@ -15,7 +15,7 @@ html, body {
 }
 
 main {    
-  background-color: slategrey;
+  background-color: #0f172a;
   height: 100vh;
   display: flex;
   align-items: center;
