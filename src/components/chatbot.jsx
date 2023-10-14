@@ -68,7 +68,7 @@ export default function Chatbot() {
                         User: 1. I clicked on team members from the home page, 2. I then selected on the team members drop down menu, 3. I seleted team member which resulted in error message: 577 "cannot add team member"
                         SAPassist: I understand, before I generate a ticket for you, does a SAP support engineer have permission to make the necessary configuration changes?
                         User: Yes ` + messages.map((message) => message.text).join("\n") +
-                        `\n\nPlease continue this conversation from where ti left off.`;
+                        `\n\nPlease continue this conversation from where it left off.`;
                         
 
       const response = await openai.chat.completions.create({
