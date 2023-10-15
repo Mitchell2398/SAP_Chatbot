@@ -35,8 +35,9 @@ main {
 
 .chatbot-container {
   background-color: #16202C;
-  width: 800px;
-  min-height: 800px;
+  width: 500px;
+  min-height: 500px;
+  height: 700px;
   border-radius: var(--border-rad-lg);
   display: flex;
   flex-direction: column;

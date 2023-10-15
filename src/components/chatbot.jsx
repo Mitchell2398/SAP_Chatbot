@@ -14,6 +14,8 @@ export default function Chatbot() {
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [replicationSteps, setReplicationSteps] = useState({});
+
   const sendMessage = (text, sender) => {
     const newMessage = { text, sender };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -69,7 +71,18 @@ export default function Chatbot() {
                         User: 1. I clicked on team members from the home page, 2. I then selected on the team members drop down menu, 3. I seleted team member which resulted in error message: 577 "cannot add team member"
                         SAPassist: I understand, before I generate a ticket for you, does a SAP support engineer have permission to make the necessary configuration changes?
                         User: Yes 
-                        ###\n\n Here is the current conversation history: ` +
+                        ###
+                        \n
+                        When you have reached the point in which you have received the replication steps and they appeapr to be actionable, 
+                        you can generate a ticket by typing the indicator "JSONTICKET", 
+                        followed by the replciation steps in json, 
+                        The keys for the json object will be :
+                          issue,
+                          replication_steps,
+                          permission_to_configure
+                        it is imperative that you do not include any other text in your response or the system may fail if you do so, so just give the "JSONTICKET" header (for identification purposes) followed by raw json.
+                        otherwise you can continue to ask questions.
+                        \n Here is the current conversation history: ` +
         messages.map((message) => message.text).join("\n") +
         `\n\nPlease continue this conversation from where it left off.`;
 
@@ -88,6 +101,28 @@ export default function Chatbot() {
         temperature: 0.7, // Adjust temperature as needed
         max_tokens: 500, // Adjust max_tokens as needed
       });
+
+
+      const jsonMatch = response.choices[0].message.content.match(/JSONTICKET\s*({[^}]+})/s);
+
+      if (jsonMatch) {
+        const jsonText = jsonMatch[1];
+      
+        try {
+          // Parse the extracted JSON text as JSON
+          const jsonData = JSON.parse(jsonText);
+      
+          // Now you can access the values in the JSON object
+          console.log("Issue: " + jsonData.issue);
+          console.log("Replication Steps: " + jsonData.replication_steps);
+          console.log("Permission to Configure: " + jsonData.permission_to_configure);
+          return "Thank you, your ticket has been generated and sent to the SAP support team. \n\n";
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      } else {
+        console.log("JSON data not found in the response.");
+      }
 
       return response.choices[0].message.content; // Return the response text
     } catch (error) {
@@ -115,10 +150,10 @@ export default function Chatbot() {
         ))}
         {submitting && (
           <div className="speech speech-ai">
-            <div class="spinner">
-              <div class="bounce1"></div>
-              <div class="bounce2"></div>
-              <div class="bounce3"></div>
+            <div className="spinner">
+              <div className="bounce1"></div>
+              <div className="bounce2"></div>
+              <div className="bounce3"></div>
             </div>{" "}
           </div>
         )}
