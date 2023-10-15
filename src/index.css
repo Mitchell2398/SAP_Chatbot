@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --border-rad-lg: 15px;
   --medium-light-text: #586e88;
@@ -13,12 +17,14 @@
 html,
 body {
   margin: 0;
-  background-color: whitesmoke;
+  
+  background-color: #090e1a;
   padding: 0;
   font-family: "Inter", sans-serif;
 }
 
-main {   
+main {    
+  background-color: #0f172a;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -77,7 +83,6 @@ main {
 }
 
 .chatbot-conversation-container {
-  height: 100%;
   overflow-y: scroll;
   margin: 1em 0;
 }
@@ -109,7 +114,7 @@ main {
   border-top-left-radius: 0;
 }
 
-.speech-user {
+.speech-User {
   background: #24976f;
   border-top-right-radius: 0;
 }
