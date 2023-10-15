@@ -1,28 +1,26 @@
 import OpenAI from "openai";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./Chatbot.css";
+import { initialPrompt } from "../../res/prompts";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-export default function Chatbot() {
+export default function Chatbot({ticket, setTicket}) {
   const [messages, setMessages] = useState([
     {
       role: "system",
-      content: `You are a support AI Bot for SAP called SAPassit. Your job is to help customers report bugs/errors they encounter.`,
-    },
-  ]);
+      content: initialPrompt,
+    }]);
   const [renderMessages, setRenderMessages] = useState([
     { role: "SAPassist", content: "How can I help you?" },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -102,7 +100,7 @@ export default function Chatbot() {
           name="user-input"
           type="text"
           id="user-input"
-          onChange={handleInputChange}
+          onChange={(e) => setInputValue(e.target.value)}
           value={inputValue}
           required
         />
