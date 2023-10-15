@@ -80,16 +80,16 @@ export default function Chatbot() {
   }
 
   return (
-    <section className="chatbot-container">
-      <div className="chatbot-header">
+    <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full sm:w-[50%] flex flex-col p-8">
+      <div className="flex flex-row justify-between items-center">
         <img src="/src/assets/Sap-logo.png" className="logo" alt="Logo" />
         <h1>
-          SAP<span className="blue">assist</span>
+          SAP<span className="text-blue-400">assist</span>
         </h1>
         <p className="supportId">User ID: 2344</p>
       </div>
 
-      <div className="chatbot-conversation-container" id="chatbot-conversation">
+      <div className="chatbot-conversation-container flex-grow" id="chatbot-conversation">
         {renderMessages.map((message, index) => (
           <div key={index} className={`speech speech-${message.role}`}>
             {`${message.role}: ${message.content}`}
@@ -97,7 +97,7 @@ export default function Chatbot() {
         ))}
       </div>
 
-      <form id="form" className="chatbot-input-container">
+      <form id="form" className="flex">
         <input
           name="user-input"
           type="text"
@@ -126,6 +126,6 @@ export default function Chatbot() {
           )}
         </button>
       </form>
-    </section>
+    </div>
   );
 }
