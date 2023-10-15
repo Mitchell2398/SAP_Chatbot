@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --border-rad-lg: 15px;
   --medium-light-text: #586e88;
