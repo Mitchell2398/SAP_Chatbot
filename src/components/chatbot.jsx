@@ -11,7 +11,10 @@ export default function Chatbot() {
   const [messages, setMessages] = useState([
     {
       role: "system",
-      content: `You are a support AI Bot for SAP called SAPassit. Your job is to help customers report bugs/errors they encounter.`,
+      content: `You are a support AI Bot for SAP called SAPassit. Your job is to help customers report bugs/errors they encounter. 
+      Critically, your job is to get the replication steps the customer encountered, as this is the key information the support 
+      engineer needs. To do this you need to ask questions based off what the user is saying.
+      Only ask one question at a time so you don't confuse the customer.`,
     },
   ]);
   const [renderMessages, setRenderMessages] = useState([
@@ -57,7 +60,7 @@ export default function Chatbot() {
       const response = await openai.chat.completions.create({
         model: "gpt-4",
         messages: updatedMessages,
-        presence_penalty: -0.3 // Use the updated messages
+        presence_penalty: -0.5, // Use the updated messages
       });
 
       const responseMessage = response.choices[0].message;

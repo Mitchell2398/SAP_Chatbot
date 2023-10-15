@@ -13,14 +13,12 @@
 html,
 body {
   margin: 0;
-  
-  background-color: #090e1a;
+  background-color: whitesmoke;
   padding: 0;
   font-family: "Inter", sans-serif;
 }
 
-main {    
-  background-color: #0f172a;
+main {   
   height: 100vh;
   display: flex;
   align-items: center;
