@@ -3,9 +3,10 @@ import Chatbot from "./components/Chatbot/Chatbot";
 
 function App() {
   return (
-    <div className="grid cols-2 h-screen">
-      <TicketTable />
+    <div className="flex flex-col sm:flex-row p-5 bg-slate-200 w-screen gap-5 h-screen items-center max-h-screen">
       <Chatbot />
+      <TicketTable />
+
     </div>
   );
 }

@@ -16,28 +16,9 @@
 
 html,
 body {
-  margin: 0;
-  
-  background-color: #090e1a;
-  padding: 0;
   font-family: "Inter", sans-serif;
 }
 
-main {    
-  background-color: #0f172a;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
 
 /* chatbot elements */
 
@@ -83,7 +64,6 @@ main {
 }
 
 .chatbot-conversation-container {
-  height: 100%;
   overflow-y: scroll;
   margin: 1em 0;
 }
