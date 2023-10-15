@@ -35,11 +35,11 @@ export default function Chatbot() {
     // Update state and wait for it to complete
     await setRenderMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", content: inputValue },
+      { role: "User", content: inputValue },
     ]);
     await setMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", content: inputValue },
+      { role: "User", content: inputValue },
     ]);
 
     setSubmitting(true);
@@ -88,6 +88,7 @@ export default function Chatbot() {
         </h1>
         <p className="supportId">User ID: 2344</p>
       </div>
+
       <div className="chatbot-conversation-container" id="chatbot-conversation">
         {renderMessages.map((message, index) => (
           <div key={index} className={`speech speech-${message.role}`}>
@@ -95,6 +96,7 @@ export default function Chatbot() {
           </div>
         ))}
       </div>
+      
       <form id="form" className="chatbot-input-container">
         <input
           name="user-input"
