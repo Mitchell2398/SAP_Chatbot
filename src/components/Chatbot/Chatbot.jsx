@@ -100,7 +100,7 @@ export default function Chatbot({ ticket, setTicket }) {
             description: jsonData.description,
           });
 
-          renderMessages.push({ role: "SAPAssist", content: "Thank you, I have now generated the ticket." });
+          setRenderMessages((prev) => [...prev,{ role: "SAPAssist", content: "Thank you, I have now generated the ticket." }]);
           return;
 
          } catch (error) {
