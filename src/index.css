@@ -13,11 +13,13 @@
 html,
 body {
   margin: 0;
+  
+  background-color: #090e1a;
   padding: 0;
   font-family: "Inter", sans-serif;
 }
 
-main {
+main {    
   background-color: #0f172a;
   height: 100vh;
   display: flex;
@@ -36,9 +38,9 @@ main {
 /* chatbot elements */
 
 .chatbot-container {
-  background-color: #16202c;
-  width: 50%;
-  min-height: 400px;
+  background-color: #16202C;
+  width: 800px;
+  min-height: 800px;
   border-radius: var(--border-rad-lg);
   display: flex;
   flex-direction: column;
@@ -149,7 +151,7 @@ input[type="text"] {
 .submit-btn.disabled {
   background-color: #007bff !important; /* Use !important to ensure it overrides other styles */
   cursor: not-allowed !important;
-  opacity: 0.5 !important;
+  opacity: 1;
   /* Add other styles as needed */
 }
 
