@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import React, { useState, useEffect } from "react";
-import "./chatbot.css";
+import "./Chatbot.css";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -96,7 +96,7 @@ export default function Chatbot() {
           </div>
         ))}
       </div>
-      
+
       <form id="form" className="chatbot-input-container">
         <input
           name="user-input"
