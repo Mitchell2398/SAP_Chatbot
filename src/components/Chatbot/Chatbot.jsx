@@ -31,9 +31,9 @@ export default function Chatbot({ ticket, setTicket }) {
       User: Yes 
       ###
       \n
-      When you have reached the point in which you have received the replication steps and they appeapr to be actionable, 
+      When you have reached the point in which you have received the replication steps and they appear to be actionable, 
       you can generate a ticket by typing the indicator "JSONTICKET", 
-      followed by the replciation steps in json, 
+      followed by the replication steps in json, 
       The keys for the json object will be :
         subject,
         priority,
