@@ -1,57 +1,73 @@
 import OpenAI from "openai";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Chatbot.css";
-import { initialPrompt } from "../../res/prompts";
+import { generateTasks, initialPrompt } from "../../res/prompts";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
+const tasks = generateTasks();
+
+const extractJSON = (message) => {
+  const jsonMatch = message.match(/JSON_DATA\s*({[^}]+})/s);
+
+  if (jsonMatch) {
+    const jsonText = jsonMatch[1];
+
+    try {
+      // Parse the extracted JSON text as JSON
+      const jsonData = JSON.parse(jsonText);
+      console.log(jsonData);
+      return jsonData;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return;
+    }
+  } else {
+    return;
+  }
+};
+
 export default function Chatbot({ ticket, setTicket }) {
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+
   const [renderMessages, setRenderMessages] = useState([
     { role: "SAPassist", content: "How can I help you?" },
   ]);
-  const [messages, setMessages] = useState([
+
+  const [backendMessages, setBackendMessages] = useState([
     {
       role: "system",
-      content:
-        `You are a support AI Bot for SAP called SAPassit. Your job is to help customers report bugs/errors they encounter. 
-      Critically, your job is to get the replication steps the customer encountered, 
-      as this is the key information the support engineer needs. To do this you need to ask questions based off what the user is saying.
-       Once you get the replication steps, then you need to ask for persomission to 
-      change the configuration of the customers system. Once you gather all the information, it will be used to generate a customer support ticket to send to the engineer team 
-      Only ask one question at a time so you don't confuse the customer.
-      ###
-      Here is an example of a conversation
-      User: I cannot add team member to project
-      SAPassist: I am sorry to hear that, can you describe the different clicks you made that lead to the error message 
-      User: 1. I clicked on team members from the home page, 2. I then selected on the team members drop down menu, 3. I seleted team member which resulted in error message: 577 "cannot add team member"
-      SAPassist: I understand, before I generate a ticket for you, does a SAP support engineer have permission to make the necessary configuration changes?
-      User: Yes 
-      ###
-      \n
-      When you have reached the point in which you have received the replication steps and they appear to be actionable, 
-      you can generate a ticket by typing the indicator "JSONTICKET", 
-      followed by the replication steps in json, 
-      The keys for the json object will be :
-        subject,
-        priority,
-        category,
-        description,
-      it is imperative that you do not include any other text in your response or the system may fail if you do so, so just give the "JSONTICKET" header (for identification purposes) followed by raw json.
-      otherwise you can continue to ask questions.`
+      content: initialPrompt,
+    },
+    {
+      role: "system",
+      content: tasks[currentTaskIndex].message,
     },
   ]);
 
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    // Call when current task changes, pass current task to messages.
+    if (currentTaskIndex < tasks.length && currentTaskIndex > 0) {
+      setBackendMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "system",
+          content: tasks[currentTaskIndex].message,
+        },
+      ]);
+    }
+  }, [currentTaskIndex]);
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
     if (inputValue === "") {
-      window.alert("Please input the problem.");
       return; // Don't proceed if the input is empty
     }
 
@@ -60,7 +76,8 @@ export default function Chatbot({ ticket, setTicket }) {
       ...prevMessages,
       { role: "User", content: inputValue },
     ]);
-    await setMessages((prevMessages) => [
+
+    await setBackendMessages((prevMessages) => [
       ...prevMessages,
       { role: "user", content: inputValue },
     ]);
@@ -73,51 +90,61 @@ export default function Chatbot({ ticket, setTicket }) {
 
   async function generateChatResponse() {
     try {
-      // Passing most up to date info, may need to swap to useEffect later
-      const updatedMessages = [...messages];
-      updatedMessages.push({ role: "user", content: inputValue });
-
-      const response = await openai.chat.completions.create({
+      let response = await openai.chat.completions.create({
         model: "gpt-4",
-        messages: updatedMessages,
+        messages: [...backendMessages, { role: "user", content: inputValue }],
         presence_penalty: -0.3, // Use the updated messages
       });
 
-      const jsonMatch = response.choices[0].message.content.match(/JSONTICKET\s*({[^}]+})/s);
+      let responseMessage = response.choices[0].message.content;
 
-      if (jsonMatch) {
-        const jsonText = jsonMatch[1];
-      
-        try {
-          // Parse the extracted JSON text as JSON
-          const jsonData = JSON.parse(jsonText);
+      const ticketData = extractJSON(responseMessage);
 
-          // Now you can access the values in the JSON object
-          setTicket({
-            subject: jsonData.subject,
-            priority: jsonData.priority,
-            category: jsonData.category,
-            description: jsonData.description,
-          });
+      // If data has been retreived
+      if (ticketData) {
+        // Update the ticket with the new data.
+        setTicket((ticket) => {
+          if (ticket) {
+            return {
+              ...ticket,
+              ...ticketData,
+            };
+          }
+          return ticketData;
+        });
 
-          setRenderMessages((prev) => [...prev,{ role: "SAPAssist", content: "Thank you, I have now generated the ticket." }]);
-          return;
+        // Move onto the next question.
+        setCurrentTaskIndex((prev) => {
+          if (prev + 1 >= tasks.length) {
+            // All tasks are completed in this if statement, add terminating logic here.
+            return prev;
+          }
 
-         } catch (error) {
-          console.error("Error parsing JSON:", error);
-        }
-      } else {
-        console.log("JSON data not found in the response.");
+          return prev + 1;
+        });
+
+        // Get the next response from the backend.
+        response = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            ...backendMessages,
+            { role: "system", content: responseMessage },
+            { role: "system", content: "Well done!, you retreived the data" },
+            { role: "system", content: tasks[currentTaskIndex + 1].message },
+          ],
+          presence_penalty: -0.3, // Use the updated messages
+        });
+
+        responseMessage = response.choices[0].message.content;
       }
 
-      const responseMessage = response.choices[0].message.content;
-       // Return the response text
-      // Update the state with the response and the user message
-      setMessages((prevMessages) => [
+      // Update messages
+      setBackendMessages((prevMessages) => [
         ...prevMessages,
-        ...updatedMessages,
-        {role:"system",content:responseMessage},
+        { role: "user", content: inputValue },
+        { role: "system", content: responseMessage },
       ]);
+
       setRenderMessages((prevMessages) => [
         ...prevMessages,
         { role: "SAPassist", content: responseMessage },
