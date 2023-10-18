@@ -17,153 +17,11 @@
 html,
 body {
   margin: 0;
-  
   background-color: #090e1a;
   padding: 0;
   font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 }
-
-main {    
-  background-color: #0f172a;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bodyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-/* chatbot elements */
-
-.chatbot-container {
-  background-color: #16202C;
-  width: 800px;
-  min-height: 800px;
-  border-radius: var(--border-rad-lg);
-  display: flex;
-  flex-direction: column;
-  padding: 1em;
-}
-
-.chatbot-container > * {
-  padding: 0.5em;
-}
-
-.chatbot-header {
-  display: grid;
-  grid-template-areas:
-    "logo . ."
-    "logo title supportId"
-    "logo subtitle .";
-}
-
-.chatbot-header > * {
-  margin: 0.11em;
-}
-
-.logo {
-  grid-area: logo;
-  width: 45px;
-}
-
-.blue {
-  color: #019ce0;
-}
-
-.supportId {
-  font-size: 10px;
-  grid-area: supportId;
-  text-align: right;
-}
-
-.chatbot-conversation-container {
-  overflow-y: scroll;
-  margin: 1em 0;
-}
-
-/* stop ugly scroll bar on some browsers */
-.chatbot-conversation-container::-webkit-scrollbar {
-  display: none;
-}
-
-.chatbot-conversation-container::-moz-scrollbar {
-  display: none;
-}
-
-.speech {
-  padding: 1em;
-  margin: 1em auto;
-  max-width: 260px;
-  color: var(--light-text);
-  min-width: 100%;
-  border-radius: var(--border-rad-lg);
-}
-
-.speech:first-child {
-  margin-top: 0;
-}
-
-.speech-SAPassist {
-  background: #253b4b;
-  border-top-left-radius: 0;
-}
-
-.speech-User {
-  background: #24976f;
-  border-top-right-radius: 0;
-}
-
-.chatbot-input-container {
-  display: flex;
-}
-
-input[type="text"],
-button {
-  background-color: transparent;
-  border: 1px solid var(--medium-light-text);
-  border-radius: 15px;
-  padding: 1em;
-}
-
-input[type="text"] {
-  color: #fcfcfc;
-  width: 100%;
-  border-right: 0;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.submit-btn {
-  border-left: 0;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.send-btn-icon {
-  width: 20px;
-  display: block;
-}
-
-/* Add this to your CSS file */
-.submit-btn.disabled {
-  background-color: #007bff !important; /* Use !important to ensure it overrides other styles */
-  cursor: not-allowed !important;
-  opacity: 1;
-  /* Add other styles as needed */
-}
-
-.send-btn-icon {
-  width: 20px;
-  display: block;
-}
-
-/* text */
 
 h1 {
   font-size: 15px;
@@ -183,9 +41,37 @@ h2 {
   text-transform: uppercase;
 }
 
+main {    
+  background-color: #0f172a;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bodyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+}
+
+@media (max-width: 1100px) {
+  .chatbot-container {
+    width: 100%;
+  }
+}
+
+
+
+/* text */
+
+
+
 /* The cursor */
 
-@keyframes cursor-blink {
+/* @keyframes cursor-blink {
   0% {
     opacity: 0;
   }
@@ -198,5 +84,5 @@ h2 {
   content: "|";
   font-weight: 700;
   display: inline-block;
-  animation: cursor-blink 0.5s steps(2) infinite;
-}
+  animation: cursor-blink 0.5s steps(2) infinite; */
+/* } */

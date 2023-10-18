@@ -1,27 +1,68 @@
 import OpenAI from "openai";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Chatbot.css";
-import { initialPrompt } from "../../res/prompts";
+import { generateTasks, initialPrompt } from "../../res/prompts";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-export default function Chatbot({ticket, setTicket}) {
-  const [messages, setMessages] = useState([
+const tasks = generateTasks();
+
+const extractJSON = (message) => {
+  const jsonMatch = message.match(/JSON_DATA\s*({[^}]+})/s);
+
+  if (jsonMatch) {
+    const jsonText = jsonMatch[1];
+
+    try {
+      // Parse the extracted JSON text as JSON
+      const jsonData = JSON.parse(jsonText);
+      console.log(jsonData);
+      return jsonData;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return;
+    }
+  } else {
+    return;
+  }
+};
+
+export default function Chatbot({ ticket, setTicket }) {
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+
+  const [renderMessages, setRenderMessages] = useState([
+    { role: "SAPassist", content: "How can I help you?" },
+  ]);
+
+  const [backendMessages, setBackendMessages] = useState([
     {
       role: "system",
       content: initialPrompt,
-    }]);
-  const [renderMessages, setRenderMessages] = useState([
-    { role: "SAPassist", content: "How can I help you?" },
+    },
+    {
+      role: "system",
+      content: tasks[currentTaskIndex].message,
+    },
   ]);
 
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-
+  useEffect(() => {
+    // Call when current task changes, pass current task to messages.
+    if (currentTaskIndex < tasks.length && currentTaskIndex > 0) {
+      setBackendMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "system",
+          content: tasks[currentTaskIndex].message,
+        },
+      ]);
+    }
+  }, [currentTaskIndex]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +74,7 @@ export default function Chatbot({ticket, setTicket}) {
     // Update state and wait for it to complete
     await setRenderMessages((prevMessages) => [
       ...prevMessages,
-      { role: "user", content: inputValue },
+      { role: "User", content: inputValue },
     ]);
 
     await setBackendMessages((prevMessages) => [
@@ -116,28 +157,32 @@ export default function Chatbot({ticket, setTicket}) {
   }
 
   return (
-    <section className="chatbot-container">
-      <div className="chatbot-header">
+    <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full sm:w-[50%] flex flex-col p-8">
+      <div className="flex flex-row justify-between items-center">
         <img src="/src/assets/Sap-logo.png" className="logo" alt="Logo" />
         <h1>
-          SAP<span className="blue">assist</span>
+          SAP<span className="text-blue-400">assist</span>
         </h1>
         <p className="supportId">User ID: 2344</p>
       </div>
 
-      <div className="chatbot-conversation-container flex-grow" id="chatbot-conversation">
+      <div
+        className="chatbot-conversation-container flex-grow"
+        id="chatbot-conversation"
+      >
         {renderMessages.map((message, index) => (
           <div key={index} className={`speech speech-${message.role}`}>
             {`${message.role}: ${message.content}`}
           </div>
         ))}
       </div>
-      <form id="form" className="chatbot-input-container">
+
+      <form id="form" className="flex">
         <input
           name="user-input"
           type="text"
           id="user-input"
-          onChange={handleInputChange}
+          onChange={(e) => setInputValue(e.target.value)}
           value={inputValue}
           required
         />
@@ -161,6 +206,6 @@ export default function Chatbot({ticket, setTicket}) {
           )}
         </button>
       </form>
-    </section>
+    </div>
   );
 }
