@@ -1,0 +1,36 @@
+/* YourComponent.css */
+
+.initalFormContainer {
+    flex-direction: column; 
+    justify-content: center;
+    width: 100%;
+    min-height: 400px;
+    display: flex; /* Add this to make the container expand vertically */
+  }
+  
+  #ifInput {
+    color: white ;
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100% 
+  }
+
+.ifFormIdentifier {
+    color: white;
+    font-weight: bold;
+}
+
+
+#ifButton {
+    margin-top: 10px;
+    height: 40px; /* Adjust the height to your preference */
+    width: 100px; /* Adjust the width to your preference */
+    color: white;
+    background-color: #24976f;
+    border-radius: 0;
+    top: 0;
+  }
+  
+
+  
