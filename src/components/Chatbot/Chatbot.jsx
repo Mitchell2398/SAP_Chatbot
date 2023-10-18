@@ -1,34 +1,32 @@
 import OpenAI from "openai";
-import React, { useState, useEffect } from "react";
-import "./chatbot.css";
+import React, { useState } from "react";
+import "./Chatbot.css";
+import { initialPrompt } from "../../res/prompts";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-export default function Chatbot() {
+export default function Chatbot({ticket, setTicket}) {
   const [messages, setMessages] = useState([
     {
       role: "system",
-      content: `You are a support AI Bot for SAP called SAPassit. Your job is to help customers report bugs/errors they encounter.`,
-    },
-  ]);
+      content: initialPrompt,
+    }]);
   const [renderMessages, setRenderMessages] = useState([
     { role: "SAPassist", content: "How can I help you?" },
   ]);
+
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
     if (inputValue === "") {
-      window.alert("Please input the problem.");
       return; // Don't proceed if the input is empty
     }
 
@@ -37,7 +35,8 @@ export default function Chatbot() {
       ...prevMessages,
       { role: "user", content: inputValue },
     ]);
-    await setMessages((prevMessages) => [
+
+    await setBackendMessages((prevMessages) => [
       ...prevMessages,
       { role: "user", content: inputValue },
     ]);
@@ -50,27 +49,64 @@ export default function Chatbot() {
 
   async function generateChatResponse() {
     try {
-      // Passing most up to date info, may need to swap to useEffect later
-      const updatedMessages = [...messages];
-      updatedMessages.push({ role: "user", content: inputValue });
-
-      const response = await openai.chat.completions.create({
+      let response = await openai.chat.completions.create({
         model: "gpt-4",
-        messages: updatedMessages,
-        presence_penalty: -0.3 // Use the updated messages
+        messages: [...backendMessages, { role: "user", content: inputValue }],
+        presence_penalty: -0.3, // Use the updated messages
       });
 
-      const responseMessage = response.choices[0].message;
+      let responseMessage = response.choices[0].message.content;
 
-      // Update the state with the response and the user message
-      setMessages((prevMessages) => [
+      const ticketData = extractJSON(responseMessage);
+
+      // If data has been retreived
+      if (ticketData) {
+        // Update the ticket with the new data.
+        setTicket((ticket) => {
+          if (ticket) {
+            return {
+              ...ticket,
+              ...ticketData,
+            };
+          }
+          return ticketData;
+        });
+
+        // Move onto the next question.
+        setCurrentTaskIndex((prev) => {
+          if (prev + 1 >= tasks.length) {
+            // All tasks are completed in this if statement, add terminating logic here.
+            return prev;
+          }
+
+          return prev + 1;
+        });
+
+        // Get the next response from the backend.
+        response = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [
+            ...backendMessages,
+            { role: "system", content: responseMessage },
+            { role: "system", content: "Well done!, you retreived the data" },
+            { role: "system", content: tasks[currentTaskIndex + 1].message },
+          ],
+          presence_penalty: -0.3, // Use the updated messages
+        });
+
+        responseMessage = response.choices[0].message.content;
+      }
+
+      // Update messages
+      setBackendMessages((prevMessages) => [
         ...prevMessages,
-        ...updatedMessages,
-        responseMessage,
+        { role: "user", content: inputValue },
+        { role: "system", content: responseMessage },
       ]);
+
       setRenderMessages((prevMessages) => [
         ...prevMessages,
-        { role: "SAPassist", content: responseMessage.content },
+        { role: "SAPassist", content: responseMessage },
       ]);
     } catch (error) {
       console.error(`Error with OpenAI API request: ${error.message}`);
@@ -88,7 +124,8 @@ export default function Chatbot() {
         </h1>
         <p className="supportId">User ID: 2344</p>
       </div>
-      <div className="chatbot-conversation-container" id="chatbot-conversation">
+
+      <div className="chatbot-conversation-container flex-grow" id="chatbot-conversation">
         {renderMessages.map((message, index) => (
           <div key={index} className={`speech speech-${message.role}`}>
             {`${message.role}: ${message.content}`}
