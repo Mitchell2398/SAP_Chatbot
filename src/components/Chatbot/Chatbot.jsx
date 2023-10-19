@@ -91,7 +91,7 @@ export default function Chatbot({ ticket, setTicket }) {
   async function generateChatResponse() {
     try {
       let response = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
         messages: [...backendMessages, { role: "user", content: inputValue }],
         presence_penalty: -0.3, // Use the updated messages
       });
@@ -125,7 +125,7 @@ export default function Chatbot({ ticket, setTicket }) {
 
         // Get the next response from the backend.
         response = await openai.chat.completions.create({
-          model: "gpt-4",
+          model: "gpt-3.5-turbo",
           messages: [
             ...backendMessages,
             { role: "system", content: responseMessage },
