@@ -143,15 +143,10 @@ export default function Chatbot({ setTicket, ticket }) {
       </div>
 
       <div
-        className="chatbot-conversation-container flex-grow"
+        className="chatbot-conversation-container flex flex-col-reverse gap-3 flex-grow"
         id="chatbot-conversation"
       >
-        {conversationHistory.map((message, index) => (
-          <div key={index} className={`speech speech-${message.role}`}>
-            {`${message.role}: ${message.content}`}
-          </div>
-        ))}
-        {ticket.completed && (
+                {ticket.completed && (
           <>
 
           <div className=" flex items-center rounded-lg flex-row justify-between px-4 py-3">
@@ -191,6 +186,13 @@ export default function Chatbot({ setTicket, ticket }) {
           </div>
           </>
         )}
+        {conversationHistory.toReversed().map((message, index) => (
+          <div key={index} className={`speech speech-${message.role}`}>
+            {`${message.role}: ${message.content}`}
+          </div>
+        ))}
+  
+
       </div>
 
       <form id="form" className="flex">
