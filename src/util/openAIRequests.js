@@ -11,8 +11,39 @@ export const getOpenAICompletion = async (messages) => {
         model: "gpt-3.5-turbo",
         messages: messages,
         presence_penalty: -0.3,
+        functions:[
+          {
+              "name": "addReplicationSteps",
+              "description": "Add data to a ticket",
+              "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "subject": {
+                      "type": "string",
+                      "description": "The subject of the ticket",
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "The description of the ticket",
+                    },
+                    "priority": {
+                        "type": "string",
+                        "description": "The priority of the ticket",
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "The category of the ticket",
+                    },
+
+                  },
+                  "required": ["task data"],
+              },
+              
+          }
+      ]
+
       });
-      return response.choices[0].message.content;
+      return response.choices[0].message;
     } catch (error) {
       console.error(error);
     }

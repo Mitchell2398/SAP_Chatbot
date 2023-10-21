@@ -30,19 +30,12 @@ ${task.task_message}
 ###
 
 When you have reached the point in which you have received the information asked for in the task and it is sufficiently clear, 
-you will immediately add the data to a ticket by typing the indicator "JSON_DATA", 
-followed by the ${task.task_summary} data, in JSON format. 
+you will immediately add the data to a ticket :
+ ${task.task_summary} data, in JSON format. 
 The keys will be :
     ${task.data_keys.map((key) => key + ",\n")}
 It is imperative that you give the accurate JSON object so that it is system-readable. 
 Follow the task as given, do not attempt to retreive information unrelated to the task.
-
-###
-
-Example:
-# could you please provide information of 'X'?
-# 'X' is 'Y'.
-# JSON_DATA: {/*JSON Object goes here with required keys*/}
 `;
 
 export const getContextMessage = (currentTaskIndex, ticket) => {
