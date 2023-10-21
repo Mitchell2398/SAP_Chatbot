@@ -93,7 +93,7 @@ export default function Chatbot({ setTicket, ticket }) {
 
       setConversationHistory((prevMessages) => [
         ...prevMessages,
-        { role: "System", content: "Generated ticket data." },
+        { role: "System", content: "Updated ticket data." },
       ]);
 
       return;
