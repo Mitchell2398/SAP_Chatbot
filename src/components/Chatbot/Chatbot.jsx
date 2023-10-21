@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Chatbot.css";
 import { generateTaskMessages } from "../../res/prompts";
-import { extractJSON } from "../../util/extractJSON";
 import { getOpenAICompletion } from "../../util/openAIRequests";
 
 const taskMessages = generateTaskMessages();
@@ -16,8 +15,6 @@ export default function Chatbot({ setTicket, ticket }) {
     { role: "SAPassist", content: "How can I help you?" },
   ]);
 
-  const ticketCompleted = useRef(false);
-
   const openAPIChatHistory = useRef([
     {
       role: "system",
@@ -26,20 +23,15 @@ export default function Chatbot({ setTicket, ticket }) {
     }
   ]);
 
-
-
   useEffect(() => {
     if (currentTaskIndex === 0) return;
     if (currentTaskIndex === taskMessages.length) {
-      ticketCompleted.current = true;
-      setConversationHistory((prevMessages) => [
-        ...prevMessages,
-        {
-          role: "System",
-          content:
-            "Thank you for your time. A support engineer should be in contact with you soon.",
-        },
-      ]);
+      setTicket((ticket) => {
+        return {
+          ...ticket,
+          completed: true,
+        };
+      });
       return;
     }
     openAPIChatHistory.current = [
@@ -56,12 +48,12 @@ export default function Chatbot({ setTicket, ticket }) {
         ...openAPIChatHistory.current,
         {
           role: "system",
-          content: message,
+          content: message.content,
         },
       ];
       setConversationHistory((prevMessages) => [
         ...prevMessages,
-        { role: "SAPassist", content: message },
+        { role: "SAPassist", content: message.content },
       ]);
     });
   }, [currentTaskIndex]);
@@ -80,10 +72,13 @@ export default function Chatbot({ setTicket, ticket }) {
       openAPIChatHistory.current
     );
 
-    const ticketData = extractJSON(openAPIResponseMessage);
+  
 
     // If data has been found.
-    if (ticketData) {
+    if (openAPIResponseMessage.function_call) {
+      const ticketData = JSON.parse(
+        openAPIResponseMessage.function_call.arguments
+      );
       setTicket((ticket) => {
         return {
           ...ticket,
@@ -102,20 +97,20 @@ export default function Chatbot({ setTicket, ticket }) {
       ]);
 
       return;
+    }else{
+      openAPIChatHistory.current = [
+        ...openAPIChatHistory.current,
+        {
+          role: "system",
+          content: openAPIResponseMessage.content,
+        },
+      ];
+
+      setConversationHistory((prevMessages) => [
+        ...prevMessages,
+        { role: "SAPassist", content: openAPIResponseMessage.content },
+      ]);
     }
-
-    openAPIChatHistory.current = [
-      ...openAPIChatHistory.current,
-      {
-        role: "system",
-        content: openAPIResponseMessage,
-      },
-    ];
-
-    setConversationHistory((prevMessages) => [
-      ...prevMessages,
-      { role: "SAPassist", content: openAPIResponseMessage },
-    ]);
   }
 
   const handleFormSubmit = async (e) => {
@@ -138,7 +133,7 @@ export default function Chatbot({ setTicket, ticket }) {
   };
 
   return (
-    <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full sm:w-[50%] flex flex-col p-8">
+    <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full lg:w-[50%] flex flex-col p-8">
       <div className="flex flex-row justify-between items-center">
         <img src="/src/assets/Sap-logo.png" className="logo" alt="Logo" />
         <h1>
@@ -156,6 +151,46 @@ export default function Chatbot({ setTicket, ticket }) {
             {`${message.role}: ${message.content}`}
           </div>
         ))}
+        {ticket.completed && (
+          <>
+
+          <div className=" flex items-center rounded-lg flex-row justify-between px-4 py-3">
+          <div className="flex flex-col">
+          <h1 className="text-lg font-semibold">Ticket Completed</h1>
+          <p className="text-sm ">Does the information provided look accurate?</p>
+          </div >
+            <button
+              className="border border-blue-700 transition-all duration-500 text-slate-300 hover:bg-blue-700 rounded-lg p-2"
+              onClick={() => {
+                setTicket((ticket) => {
+                  return {
+                    ...ticket,
+                    submitted: true,
+                    editable: false,
+                  };
+                });
+              }}
+            >
+              Submit Ticket
+            </button>
+            <button className="
+            border border-blue-400 text-slate-300 hover:bg-blue-400 hover:text-slate-900 transition-all duration-500 rounded-lg p-2
+            "
+            onClick={
+              () => {
+                setTicket((ticket) => {
+                  return {
+                    ...ticket,
+                    editable: !ticket.editable,
+                  };
+                });
+              }
+            }>
+              {!ticket.editable? "Edit Ticket": "Finish Editting"}
+            </button>
+          </div>
+          </>
+        )}
       </div>
 
       <form id="form" className="flex">
