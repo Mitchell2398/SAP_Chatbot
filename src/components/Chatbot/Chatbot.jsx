@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Chatbot.css";
-import {
-  generateTaskMessages,
-  getContextMessage,
-  initialPrompt,
-} from "../../res/prompts";
+import { generateTaskMessages, getContextMessage } from "../../res/prompts";
 import { extractJSON } from "../../util/extractJSON";
 import { getOpenAICompletion } from "../../util/openAIRequests";
 
@@ -16,7 +12,7 @@ export default function Chatbot({ setTicket, ticket }) {
 
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-  const [chatBoxMessages, setChatBoxMessages] = useState([
+  const [conversationHistory, setConversationHistory] = useState([
     { role: "SAPassist", content: "How can I help you?" },
   ]);
 
@@ -24,8 +20,6 @@ export default function Chatbot({ setTicket, ticket }) {
     {
       role: "system",
       content:
-        initialPrompt +
-        "\n" +
         taskMessages[currentTaskIndex] +
         "\n" +
         getContextMessage(currentTaskIndex, ticket),
@@ -38,30 +32,44 @@ export default function Chatbot({ setTicket, ticket }) {
       {
         role: "system",
         content:
-          initialPrompt +
+          taskMessages[currentTaskIndex] +
           "\n" +
-          getContextMessage(currentTaskIndex, ticket) +
-          "\n" +
-          taskMessages[currentTaskIndex]
-      }
+          getContextMessage(currentTaskIndex, ticket),
+      },
     ];
   };
 
   useEffect(() => {
+    if (currentTaskIndex === 0) return;
+    
     // TODO : get next 'openAPImessages' object.
     openAPIChatHistory.current = getNextChatHistory();
+    // Get the next response from the backend.
+    getOpenAICompletion(openAPIChatHistory.current).then((message) => {
+      openAPIChatHistory.current = [
+        ...openAPIChatHistory.current,
+        {
+          role: "system",
+          content: message,
+        },
+      ];
+      setConversationHistory((prevMessages) => [
+        ...prevMessages,
+        { role: "SAPassist", content: message },
+      ]);
+    });
   }, [currentTaskIndex]);
 
   async function generateChatResponse() {
-    // TODO : get next 'openAPImessages' object.
+    // Add the user's message to the chat history
     openAPIChatHistory.current = [
       ...openAPIChatHistory.current,
       {
         role: "user",
         content: inputValue,
-      }
+      },
     ];
-  
+
     let openAPIResponseMessage = await getOpenAICompletion(
       openAPIChatHistory.current
     );
@@ -84,16 +92,27 @@ export default function Chatbot({ setTicket, ticket }) {
           : currentTaskIndex + 1;
       });
 
-      // Get the next response from the backend.
-      openAPIResponseMessage = await getOpenAICompletion(
-        openAPIChatHistory.current
-      );
-    }
+      setConversationHistory((prevMessages) => [
+        ...prevMessages,
+        { role: "System", content: "Generated ticket data." },
+      ]);
 
-    setChatBoxMessages((prevMessages) => [
+      return;
+    } 
+
+    openAPIChatHistory.current = [
+      ...openAPIChatHistory.current,
+      {
+        role: "system",
+        content: openAPIResponseMessage,
+      },
+    ];
+
+    setConversationHistory((prevMessages) => [
       ...prevMessages,
       { role: "SAPassist", content: openAPIResponseMessage },
     ]);
+  
   }
 
   const handleFormSubmit = async (e) => {
@@ -104,7 +123,7 @@ export default function Chatbot({ setTicket, ticket }) {
     }
 
     // Update state and wait for it to complete
-    await setChatBoxMessages((prevMessages) => [
+    await setConversationHistory((prevMessages) => [
       ...prevMessages,
       { role: "User", content: inputValue },
     ]);
@@ -129,7 +148,7 @@ export default function Chatbot({ setTicket, ticket }) {
         className="chatbot-conversation-container flex-grow"
         id="chatbot-conversation"
       >
-        {chatBoxMessages.map((message, index) => (
+        {conversationHistory.map((message, index) => (
           <div key={index} className={`speech speech-${message.role}`}>
             {`${message.role}: ${message.content}`}
           </div>

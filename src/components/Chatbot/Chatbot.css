@@ -78,6 +78,12 @@
   border-top-right-radius: 0;
 }
 
+
+
+.speech-System {
+  background: #586ece;
+}
+
 .chatbot-input-container {
   display: flex;
 }
