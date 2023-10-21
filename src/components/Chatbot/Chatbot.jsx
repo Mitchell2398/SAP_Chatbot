@@ -42,8 +42,8 @@ export default function Chatbot({ setTicket, ticket }) {
   useEffect(() => {
     if (currentTaskIndex === 0) return;
 
-
     openAPIChatHistory.current = getNextChatHistory();
+
     // Get the next response from the backend.
     getOpenAICompletion(openAPIChatHistory.current).then((message) => {
       openAPIChatHistory.current = [
@@ -58,15 +58,6 @@ export default function Chatbot({ setTicket, ticket }) {
         { role: "SAPassist", content: message },
       ]);
     });
-    
-    if (currentTaskIndex+1 >= taskMessages.length) {
-      setConversationHistory((prevMessages) => [
-        ...prevMessages,
-        { role: "System", content: "Full ticket has been generated. Thank you for your time." },
-      ]);
-
-      return;
-    };
   }, [currentTaskIndex]);
 
   async function generateChatResponse() {
@@ -96,9 +87,19 @@ export default function Chatbot({ setTicket, ticket }) {
 
       // Move onto the next question.
       setCurrentTaskIndex((currentTaskIndex) => {
-        return currentTaskIndex + 1 >= taskMessages.length
-          ? currentTaskIndex
-          : currentTaskIndex + 1;
+        if (currentTaskIndex + 1 >= taskMessages.length) {
+          setConversationHistory((prevMessages) => [
+            ...prevMessages,
+            {
+              role: "System",
+              content:
+                "Thank you for your time. A support engineer should be in contact with you soon.",
+            },
+          ]);
+
+          return currentTaskIndex;
+        }
+        return currentTaskIndex + 1;
       });
 
       setConversationHistory((prevMessages) => [
@@ -107,7 +108,7 @@ export default function Chatbot({ setTicket, ticket }) {
       ]);
 
       return;
-    } 
+    }
 
     openAPIChatHistory.current = [
       ...openAPIChatHistory.current,
@@ -121,7 +122,6 @@ export default function Chatbot({ setTicket, ticket }) {
       ...prevMessages,
       { role: "SAPassist", content: openAPIResponseMessage },
     ]);
-  
   }
 
   const handleFormSubmit = async (e) => {
