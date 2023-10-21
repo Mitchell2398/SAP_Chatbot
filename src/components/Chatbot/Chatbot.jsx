@@ -41,7 +41,15 @@ export default function Chatbot({ setTicket, ticket }) {
 
   useEffect(() => {
     if (currentTaskIndex === 0) return;
-    
+    if (currentTaskIndex >= taskMessages.length) {
+      setConversationHistory((prevMessages) => [
+        ...prevMessages,
+        { role: "System", content: "Full ticket has been generated. Thank you for your time." },
+      ]);
+
+      return;
+    };
+
     // TODO : get next 'openAPImessages' object.
     openAPIChatHistory.current = getNextChatHistory();
     // Get the next response from the backend.
