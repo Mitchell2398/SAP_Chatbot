@@ -28,19 +28,24 @@ export const TicketTable = ({ setTicket, ticket }) => {
         <div className="flex flex-row justify-between gap-5 mx-3">
           <div className="flex border-slate-600 flex-row gap-5 items-center gap-5 justify-start">
             <h1 className="text-lg">Subject</h1>
-            <input
+            {ticket.editable?(<input
               className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950"
               value={ticket.subject}
-              onChange={ticket.editable?(event) => handleFieldChange(event, "subject"):null}
-            />
+              onChange={(event) => handleFieldChange(event, "subject")}
+            />):(<h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">{ticket.subject}</h1>)}
           </div>
           <div className="flex flex-row gap-3 items-center p-2 rounded-lg border-2 border-emerald-700 justify-start">
             <h1 className="text-base font-semibold">Priority</h1>
-            <input
-              className="text-base text-slate-300 text-center w-[3rem] border-slate-700  bg-slate-950"
+              {ticket.editable?(<select
+              className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950"
               value={ticket.priority}
-              onChange={ticket.editable?(event) => handleFieldChange(event, "priority"):null}
-            />
+              onChange={(event) => handleFieldChange(event, "priority")}
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>):(<h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">{ticket.priority}</h1>)
+            }
           </div>
         </div>
 
