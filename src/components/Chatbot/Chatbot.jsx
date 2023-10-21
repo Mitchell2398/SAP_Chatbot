@@ -16,6 +16,8 @@ export default function Chatbot({ setTicket, ticket }) {
     { role: "SAPassist", content: "How can I help you?" },
   ]);
 
+  const ticketCompleted = useRef(false);
+
   const openAPIChatHistory = useRef([
     {
       role: "system",
@@ -87,7 +89,8 @@ export default function Chatbot({ setTicket, ticket }) {
 
       // Move onto the next question.
       setCurrentTaskIndex((currentTaskIndex) => {
-        if (currentTaskIndex + 1 >= taskMessages.length) {
+        if (currentTaskIndex + 1 >= taskMessages.length && !ticketCompleted) {
+          ticketCompleted.current = true;
           setConversationHistory((prevMessages) => [
             ...prevMessages,
             {
