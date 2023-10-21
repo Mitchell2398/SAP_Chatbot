@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Chatbot.css";
-import { generateTaskMessages, getContextMessage } from "../../res/prompts";
+import { generateTaskMessages } from "../../res/prompts";
 import { extractJSON } from "../../util/extractJSON";
 import { getOpenAICompletion } from "../../util/openAIRequests";
 
@@ -22,29 +22,33 @@ export default function Chatbot({ setTicket, ticket }) {
     {
       role: "system",
       content:
-        taskMessages[currentTaskIndex] +
-        "\n" +
-        getContextMessage(currentTaskIndex, ticket),
-    },
+        taskMessages[currentTaskIndex] 
+    }
   ]);
 
-  // Called when the current task index changes, delete conversation history and jsut give context
-  const getNextChatHistory = () => {
-    return [
-      {
-        role: "system",
-        content:
-          taskMessages[currentTaskIndex] +
-          "\n" +
-          getContextMessage(currentTaskIndex, ticket),
-      },
-    ];
-  };
+
 
   useEffect(() => {
     if (currentTaskIndex === 0) return;
-
-    openAPIChatHistory.current = getNextChatHistory();
+    if (currentTaskIndex === taskMessages.length) {
+      ticketCompleted.current = true;
+      setConversationHistory((prevMessages) => [
+        ...prevMessages,
+        {
+          role: "System",
+          content:
+            "Thank you for your time. A support engineer should be in contact with you soon.",
+        },
+      ]);
+      return;
+    }
+    openAPIChatHistory.current = [
+      {
+        role: "system",
+        content:
+          taskMessages[currentTaskIndex] 
+      }
+    ];
 
     // Get the next response from the backend.
     getOpenAICompletion(openAPIChatHistory.current).then((message) => {
@@ -89,19 +93,6 @@ export default function Chatbot({ setTicket, ticket }) {
 
       // Move onto the next question.
       setCurrentTaskIndex((currentTaskIndex) => {
-        if (currentTaskIndex + 1 >= taskMessages.length && !ticketCompleted) {
-          ticketCompleted.current = true;
-          setConversationHistory((prevMessages) => [
-            ...prevMessages,
-            {
-              role: "System",
-              content:
-                "Thank you for your time. A support engineer should be in contact with you soon.",
-            },
-          ]);
-
-          return currentTaskIndex;
-        }
         return currentTaskIndex + 1;
       });
 
