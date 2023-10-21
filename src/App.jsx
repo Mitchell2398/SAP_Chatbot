@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="flex flex-col sm:flex-row p-5 bg-slate-200 w-screen gap-5 h-screen items-center max-h-screen">
       <Chatbot setTicket={setTicket} ticket={ticket} />
-      <TicketTable subject={ticket.subject} priority={ticket.priority} category={ticket.category} description={ticket.description} />
+      <TicketTable ticket={ticket} setTicket={setTicket}/>
 
     </div>
   );

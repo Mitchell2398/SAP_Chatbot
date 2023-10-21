@@ -1,68 +1,100 @@
-import OpenAI from "openai";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Chatbot.css";
-import { generateTasks, initialPrompt } from "../../res/prompts";
+import {
+  generateTaskMessages,
+  getContextMessage,
+  initialPrompt,
+} from "../../res/prompts";
+import { extractJSON } from "../../util/extractJSON";
+import { getOpenAICompletion } from "../../util/openAIRequests";
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
+const taskMessages = generateTaskMessages();
 
-const tasks = generateTasks();
-
-const extractJSON = (message) => {
-  const jsonMatch = message.match(/JSON_DATA\s*({[^}]+})/s);
-
-  if (jsonMatch) {
-    const jsonText = jsonMatch[1];
-
-    try {
-      // Parse the extracted JSON text as JSON
-      const jsonData = JSON.parse(jsonText);
-      console.log(jsonData);
-      return jsonData;
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return;
-    }
-  } else {
-    return;
-  }
-};
-
-export default function Chatbot({ ticket, setTicket }) {
-  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
-
-  const [renderMessages, setRenderMessages] = useState([
-    { role: "SAPassist", content: "How can I help you?" },
-  ]);
-
-  const [backendMessages, setBackendMessages] = useState([
-    {
-      role: "system",
-      content: initialPrompt,
-    },
-    {
-      role: "system",
-      content: tasks[currentTaskIndex].message,
-    },
-  ]);
-
+export default function Chatbot({ setTicket, ticket }) {
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+
+  const [chatBoxMessages, setChatBoxMessages] = useState([
+    { role: "SAPassist", content: "How can I help you?" },
+  ]);
+
+  const openAPIChatHistory = useRef([
+    {
+      role: "system",
+      content:
+        initialPrompt +
+        "\n" +
+        taskMessages[currentTaskIndex] +
+        "\n" +
+        getContextMessage(currentTaskIndex, ticket),
+    },
+  ]);
+
+  // Called when the current task index changes, delete conversation history and jsut give context
+  const getNextChatHistory = () => {
+    return [
+      {
+        role: "system",
+        content:
+          initialPrompt +
+          "\n" +
+          getContextMessage(currentTaskIndex, ticket) +
+          "\n" +
+          taskMessages[currentTaskIndex]
+      }
+    ];
+  };
+
   useEffect(() => {
-    // Call when current task changes, pass current task to messages.
-    if (currentTaskIndex < tasks.length && currentTaskIndex > 0) {
-      setBackendMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          role: "system",
-          content: tasks[currentTaskIndex].message,
-        },
-      ]);
-    }
+    // TODO : get next 'openAPImessages' object.
+    openAPIChatHistory.current = getNextChatHistory();
   }, [currentTaskIndex]);
+
+  async function generateChatResponse() {
+    // TODO : get next 'openAPImessages' object.
+    openAPIChatHistory.current = [
+      ...openAPIChatHistory.current,
+      {
+        role: "user",
+        content: inputValue,
+      }
+    ];
+  
+    let openAPIResponseMessage = await getOpenAICompletion(
+      openAPIChatHistory.current
+    );
+
+    const ticketData = extractJSON(openAPIResponseMessage);
+
+    // If data has been found.
+    if (ticketData) {
+      setTicket((ticket) => {
+        return {
+          ...ticket,
+          ...ticketData,
+        };
+      });
+
+      // Move onto the next question.
+      setCurrentTaskIndex((currentTaskIndex) => {
+        return currentTaskIndex + 1 >= taskMessages.length
+          ? currentTaskIndex
+          : currentTaskIndex + 1;
+      });
+
+      // Get the next response from the backend.
+      openAPIResponseMessage = await getOpenAICompletion(
+        openAPIChatHistory.current
+      );
+    }
+
+    setChatBoxMessages((prevMessages) => [
+      ...prevMessages,
+      { role: "SAPassist", content: openAPIResponseMessage },
+    ]);
+  }
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -72,14 +104,9 @@ export default function Chatbot({ ticket, setTicket }) {
     }
 
     // Update state and wait for it to complete
-    await setRenderMessages((prevMessages) => [
+    await setChatBoxMessages((prevMessages) => [
       ...prevMessages,
       { role: "User", content: inputValue },
-    ]);
-
-    await setBackendMessages((prevMessages) => [
-      ...prevMessages,
-      { role: "user", content: inputValue },
     ]);
 
     setSubmitting(true);
@@ -87,74 +114,6 @@ export default function Chatbot({ ticket, setTicket }) {
     await generateChatResponse(); // Now, the state is updated
     setSubmitting(false);
   };
-
-  async function generateChatResponse() {
-    try {
-      let response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [...backendMessages, { role: "user", content: inputValue }],
-        presence_penalty: -0.3, // Use the updated messages
-      });
-
-      let responseMessage = response.choices[0].message.content;
-
-      const ticketData = extractJSON(responseMessage);
-
-      // If data has been retreived
-      if (ticketData) {
-        // Update the ticket with the new data.
-        setTicket((ticket) => {
-          if (ticket) {
-            return {
-              ...ticket,
-              ...ticketData,
-            };
-          }
-          return ticketData;
-        });
-
-        // Move onto the next question.
-        setCurrentTaskIndex((prev) => {
-          if (prev + 1 >= tasks.length) {
-            // All tasks are completed in this if statement, add terminating logic here.
-            return prev;
-          }
-
-          return prev + 1;
-        });
-
-        // Get the next response from the backend.
-        response = await openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [
-            ...backendMessages,
-            { role: "system", content: responseMessage },
-            { role: "system", content: "Well done!, you retreived the data" },
-            { role: "system", content: tasks[currentTaskIndex + 1].message },
-          ],
-          presence_penalty: -0.3, // Use the updated messages
-        });
-
-        responseMessage = response.choices[0].message.content;
-      }
-
-      // Update messages
-      setBackendMessages((prevMessages) => [
-        ...prevMessages,
-        { role: "user", content: inputValue },
-        { role: "system", content: responseMessage },
-      ]);
-
-      setRenderMessages((prevMessages) => [
-        ...prevMessages,
-        { role: "SAPassist", content: responseMessage },
-      ]);
-    } catch (error) {
-      console.error(`Error with OpenAI API request: ${error.message}`);
-      setSubmitting(false);
-      throw error;
-    }
-  }
 
   return (
     <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full sm:w-[50%] flex flex-col p-8">
@@ -170,7 +129,7 @@ export default function Chatbot({ ticket, setTicket }) {
         className="chatbot-conversation-container flex-grow"
         id="chatbot-conversation"
       >
-        {renderMessages.map((message, index) => (
+        {chatBoxMessages.map((message, index) => (
           <div key={index} className={`speech speech-${message.role}`}>
             {`${message.role}: ${message.content}`}
           </div>
