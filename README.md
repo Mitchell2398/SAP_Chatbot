@@ -1,4 +1,4 @@
-## SAP Support Bot 
+## SAP AI Assistant
 
 #### Created for the enterprise challenge 22/23. 
 
