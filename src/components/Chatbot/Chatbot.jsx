@@ -186,7 +186,7 @@ export default function Chatbot({ setTicket, ticket }) {
                 });
               }
             }>
-              {!ticket.editable? "Edit Ticket": "Finish Editting"}
+              {!ticket.editable? "Edit Ticket": "Finish Edit"}
             </button>
           </div>
           </>
