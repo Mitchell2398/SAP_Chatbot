@@ -579,10 +579,6 @@ video {
   max-height: 100vh;
 }
 
-.w-\[3rem\] {
-  width: 3rem;
-}
-
 .w-full {
   width: 100%;
 }
@@ -629,6 +625,10 @@ video {
 
 .gap-5 {
   gap: 1.25rem;
+}
+
+.overflow-x-visible {
+  overflow-x: visible;
 }
 
 .rounded-2xl {
@@ -694,11 +694,6 @@ video {
   background-color: rgb(2 6 23 / var(--tw-bg-opacity));
 }
 
-.bg-blue-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
-}
-
 .p-1 {
   padding: 0.25rem;
 }
@@ -727,6 +722,14 @@ video {
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+
+.pr-4 {
+  padding-right: 1rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-center {
