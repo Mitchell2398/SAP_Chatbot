@@ -20,23 +20,23 @@ export const getOpenAICompletion = async (messages) => {
                   "properties": {
                     "subject": {
                       "type": "string",
-                      "description": "The subject of the ticket",
+                      "description": "Mandatory: the subject of the ticket",
                     },
                     "description": {
                         "type": "string",
-                        "description": "The description of the ticket",
+                        "description": "Description of the ticket, include steps to replicate issue.",
                     },
                     "priority": {
                         "type": "string",
-                        "description": "The priority of the ticket",
+                        "description": "Mandatory: The priority of the ticket",
                     },
                     "category": {
                         "type": "string",
-                        "description": "The category of the ticket",
+                        "description": "Mandatory: The category of the ticket",
                     },
 
                   },
-                  "required": ["estimate subject", "concise description with replication steps", "estimate priority", "estimate category"],
+                  "required": ["concise description with replication steps"],
               },
               
           }
