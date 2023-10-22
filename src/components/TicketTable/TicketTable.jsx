@@ -29,7 +29,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
           <div className="flex border-slate-600 flex-row gap-5 items-center gap-5 justify-start">
             <h1 className="text-lg">Subject</h1>
             {ticket.editable?(<input
-              className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950"
+              className="text-slate-300 border p-2 rounded-lg text-center w-fill border-slate-700 bg-slate-950"
               value={ticket.subject}
               onChange={(event) => handleFieldChange(event, "subject")}
             />):(<h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">{ticket.subject}</h1>)}
@@ -37,7 +37,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
           <div className="flex flex-row gap-3 items-center p-2 rounded-lg border-2 border-emerald-700 justify-start">
             <h1 className="text-base font-semibold">Priority</h1>
               {ticket.editable?(<select
-              className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950"
+              className="text-slate-300 border p-2 rounded-lg text-center w-fill border-slate-700 bg-slate-950"
               value={ticket.priority}
               onChange={(event) => handleFieldChange(event, "priority")}
             >
@@ -51,21 +51,27 @@ export const TicketTable = ({ setTicket, ticket }) => {
 
         <div className="flex flex-row p-3 justify-start gap-5 mb-2 items-center">
           <h1 className="text-lg">Category</h1>
-          <input
-            className="text-slate-300 border-slate-700 bg-slate-950"
+          {ticket.editable?(<select
+            className="text-slate-300 border-slate-700 border p-2 rounded-lg bg-slate-950"
             value={ticket.category}
-            onChange={ticket.editable?(event) => handleFieldChange(event, "category"):null}
-          />
+            onChange={(event) => handleFieldChange(event, "category")}
+          >
+            <option value="Bug">Bug</option>
+            <option value="Feature Request">Feature Request</option>
+            <option value="Other">Other</option>
+          </select>):(<h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">{ticket.category}</h1>)}
+
         </div>
         <div className="flex p-3 border-t flex-grow h-full border-slate-600 flex-col">
           <h1 className="text-lg mb-3">Description</h1>
+          {ticket.editable?(
           <textarea
-            className="text-slate-300 p-2 resize-none flex-grow border-slate-700  bg-slate-950"
+            className="text-slate-300 border p-2 rounded-lg p-2 resize-none flex-grow border-slate-700  bg-slate-950"
             title={"Description."}
             placeholder="Issue decription including replication steps"
             value={ticket.description}
-            onChange={ticket.editable?(event) => handleFieldChange(event, "description"):null}
-          />
+            onChange={(event) => handleFieldChange(event, "description")}
+          />):(<h1 className="text-slate-300 text-left w-fill border-slate-700 bg-slate-950">{ticket.description}</h1>)}
         </div>
       </div>
     </div>
