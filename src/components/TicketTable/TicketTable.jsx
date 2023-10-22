@@ -9,6 +9,8 @@ export const TicketTable = ({ setTicket, ticket }) => {
     setTicket({ ...ticket, [fieldName]: value });
   };
 
+ 
+
   return (
     <div className="lg:w-[50%] h-[80%] w-full flex flex-col bg-slate-950 p-5 rounded-xl">
       <div className="flex flex-row justify-between  items-center mb-3">
@@ -85,7 +87,9 @@ export const TicketTable = ({ setTicket, ticket }) => {
           )}
         </div>
         <div className="flex pt-3 border-t flex-grow h-full border-slate-600 flex-col">
-          <h1 className="text-lg mb-3  text-slate-200 font-semibold">Description</h1>
+          <h1 className="text-lg mb-3  text-slate-200 font-semibold">
+            Description
+          </h1>
           {ticket.editable ? (
             <textarea
               className="text-slate-300 border p-2 rounded-lg p-2 resize-none flex-grow border-slate-700  bg-slate-950"
@@ -101,6 +105,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
           )}
         </div>
       </div>
+    
     </div>
   );
 };

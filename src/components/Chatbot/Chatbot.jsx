@@ -18,9 +18,8 @@ export default function Chatbot({ setTicket, ticket }) {
   const openAPIChatHistory = useRef([
     {
       role: "system",
-      content:
-        taskMessages[currentTaskIndex] 
-    }
+      content: taskMessages[currentTaskIndex],
+    },
   ]);
 
   useEffect(() => {
@@ -37,9 +36,8 @@ export default function Chatbot({ setTicket, ticket }) {
     openAPIChatHistory.current = [
       {
         role: "system",
-        content:
-          taskMessages[currentTaskIndex] 
-      }
+        content: taskMessages[currentTaskIndex],
+      },
     ];
 
     // Get the next response from the backend.
@@ -72,8 +70,6 @@ export default function Chatbot({ setTicket, ticket }) {
       openAPIChatHistory.current
     );
 
-  
-
     // If data has been found.
     if (openAPIResponseMessage.function_call) {
       const ticketData = JSON.parse(
@@ -97,7 +93,7 @@ export default function Chatbot({ setTicket, ticket }) {
       ]);
 
       return;
-    }else{
+    } else {
       openAPIChatHistory.current = [
         ...openAPIChatHistory.current,
         {
@@ -132,6 +128,14 @@ export default function Chatbot({ setTicket, ticket }) {
     setSubmitting(false);
   };
 
+  // Auto scroll functionality
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const chatElement = chatContainerRef.current;
+    chatElement.scrollTop = chatElement.scrollHeight;
+  }, [conversationHistory]);
+
   return (
     <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full lg:w-[50%] flex flex-col p-8">
       <div className="flex flex-row justify-between items-center">
@@ -145,45 +149,47 @@ export default function Chatbot({ setTicket, ticket }) {
       <div
         className="chatbot-conversation-container flex flex-col-reverse gap-3 flex-grow"
         id="chatbot-conversation"
+        ref={chatContainerRef}
       >
-                {ticket.completed && (
+        {ticket.completed && (
           <>
-
-          <div className=" flex items-center rounded-lg flex-row justify-between px-4 py-3">
-          <div className="flex flex-col">
-          <h1 className="text-lg font-semibold">Ticket Completed</h1>
-          <p className="text-sm ">Does the information provided look accurate?</p>
-          </div >
-            <button
-              className="border border-blue-700 transition-all duration-500 text-slate-300 hover:bg-blue-700 rounded-lg p-2"
-              onClick={() => {
-                setTicket((ticket) => {
-                  return {
-                    ...ticket,
-                    submitted: true,
-                    editable: false,
-                  };
-                });
-              }}
-            >
-              Submit Ticket
-            </button>
-            <button className="
+            <div className=" flex items-center rounded-lg flex-row justify-between px-4 py-3">
+              <div className="flex flex-col">
+                <h1 className="text-lg font-semibold">Ticket Completed</h1>
+                <p className="text-sm ">
+                  Does the information provided look accurate?
+                </p>
+              </div>
+              <button
+                className="border border-blue-700 transition-all duration-500 text-slate-300 hover:bg-blue-700 rounded-lg p-2"
+                onClick={() => {
+                  setTicket((ticket) => {
+                    return {
+                      ...ticket,
+                      submitted: true,
+                      editable: false,
+                    };
+                  });
+                }}
+              >
+                Submit Ticket
+              </button>
+              <button
+                className="
             border border-blue-400 text-slate-300 hover:bg-blue-400 hover:text-slate-900 transition-all duration-500 rounded-lg p-2
             "
-            onClick={
-              () => {
-                setTicket((ticket) => {
-                  return {
-                    ...ticket,
-                    editable: !ticket.editable,
-                  };
-                });
-              }
-            }>
-              {!ticket.editable? "Edit Ticket": "Finish Edit"}
-            </button>
-          </div>
+                onClick={() => {
+                  setTicket((ticket) => {
+                    return {
+                      ...ticket,
+                      editable: !ticket.editable,
+                    };
+                  });
+                }}
+              >
+                {!ticket.editable ? "Edit Ticket" : "Finish Edit"}
+              </button>
+            </div>
           </>
         )}
         {conversationHistory.toReversed().map((message, index) => (
@@ -191,8 +197,7 @@ export default function Chatbot({ setTicket, ticket }) {
             {`${message.role}: ${message.content}`}
           </div>
         ))}
-  
-
+     
       </div>
 
       <form id="form" className="flex">
