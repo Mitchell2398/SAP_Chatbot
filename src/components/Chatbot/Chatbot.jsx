@@ -139,7 +139,7 @@ export default function Chatbot({ setTicket, ticket }) {
   return (
     <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full lg:w-[50%] flex flex-col p-8">
       <div className="flex flex-row justify-between items-center">
-        <img src="/src/assets/Sap-logo.png" className="logo" alt="Logo" />
+        <img src="https://res.cloudinary.com/dheko2ynz/image/upload/v1698009828/Sap-logo_qfsey0.png" className="logo" alt="Logo" />
         <h1>
           SAP<span className="text-blue-400">assist</span>
         </h1>
@@ -236,7 +236,7 @@ export default function Chatbot({ setTicket, ticket }) {
             </div>
           ) : (
             <img
-              src="/src/assets/send-btn-icon.png"
+              src="https://res.cloudinary.com/dheko2ynz/image/upload/v1698009828/send-btn-icon_vvhbud.png"
               className="send-btn-icon"
             />
           )}
