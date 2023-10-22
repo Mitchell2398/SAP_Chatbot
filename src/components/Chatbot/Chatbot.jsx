@@ -192,12 +192,25 @@ export default function Chatbot({ setTicket, ticket }) {
             </div>
           </>
         )}
-        {conversationHistory.toReversed().map((message, index) => (
-          <div key={index} className={`speech speech-${message.role}`}>
-            {`${message.role}: ${message.content}`}
+
+        {submitting && (
+          <div className=" speech speech-SAPassist">
+          <div className="spinner">
+            <div className="bounce1"></div>
+            <div className="bounce2"></div>
+            <div className="bounce3"></div>
+            </div>
           </div>
-        ))}
-     
+        )}
+
+        {conversationHistory
+          .slice()
+          .reverse()
+          .map((message, index) => (
+            <div key={index} className={`speech speech-${message.role}`}>
+              {`${message.role}: ${message.content}`}
+            </div>
+          ))}
       </div>
 
       <form id="form" className="flex">
