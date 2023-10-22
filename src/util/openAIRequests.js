@@ -36,7 +36,7 @@ export const getOpenAICompletion = async (messages) => {
                     },
 
                   },
-                  "required": ["task data"],
+                  "required": ["estimate subject", "concise description with replication steps", "estimate priority", "estimate category"],
               },
               
           }
