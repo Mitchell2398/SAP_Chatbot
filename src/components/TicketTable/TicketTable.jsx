@@ -42,7 +42,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
           </div>
           {ticket.editable ? (
             <h1 className="rounded-md text-sm text-red-700 font-semibold mt-1">
-              Editting
+              Editing
             </h1>
           ) : (
             <></>
