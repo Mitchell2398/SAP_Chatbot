@@ -4,10 +4,11 @@
 const tasks = [
   {
     task_message: `Ask the user to describe the different clicks 
-    they made that lead to the error message,
-    and you will ask them to describe the error message they received.`,
+    they made that lead to the error message.`,
     task_summary: "replication steps and error message",
-    data_keys: ["subject", "priority", "category", "description"],
+    data_keys: {
+      description:""
+    },
   },
   {
     task_message: `Ask for permission for an SAP support engineer to make the configuration changes 
@@ -21,7 +22,7 @@ export const getTaskRetreivalMessage = (task) => `
 You are a support AI Bot for SAP called SAPassist. 
 Your job is to follow tasks in order to complete missing ticket data. 
 To do this you need to ask questions based off what the user is saying, and the task you have been given.
-Only ask one question at a time so you don't confuse the customer.
+It is imperative that you ask one question at a time so you don't confuse the customer.
 
 Here is your current task,
 
