@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Chatbot.css";
-import { generateTaskMessages } from "../../res/prompts";
-import { getOpenAICompletion } from "../../util/openAIRequests";
+import {
+  generateTaskMessages,
+  getTaskFunction,
+  tasks,
+} from "../../res/prompts";
+import { getOpenAICompletion, completeTicketOpenAi } from "../../util/apiCall";
 
 const taskMessages = generateTaskMessages();
 
@@ -24,23 +28,16 @@ export default function Chatbot({ setTicket, ticket }) {
 
   useEffect(() => {
     if (currentTaskIndex === 0) return;
-    if (currentTaskIndex === taskMessages.length) {
-      setTicket((ticket) => {
-        return {
-          ...ticket,
-          completed: true,
-        };
-      });
-      return;
-    }
+
     openAPIChatHistory.current = [
       {
         role: "system",
         content: taskMessages[currentTaskIndex],
       },
     ];
+    console.log(taskMessages[currentTaskIndex]);
+    console.log(conversationHistory);
 
-    // Get the next response from the backend.
     getOpenAICompletion(openAPIChatHistory.current).then((message) => {
       openAPIChatHistory.current = [
         ...openAPIChatHistory.current,
@@ -49,12 +46,44 @@ export default function Chatbot({ setTicket, ticket }) {
           content: message.content,
         },
       ];
+
       setConversationHistory((prevMessages) => [
         ...prevMessages,
         { role: "SAPassist", content: message.content },
       ]);
     });
   }, [currentTaskIndex]);
+
+  async function nextTask() {
+    const newData = await completeTicketOpenAi(
+      [
+        ...openAPIChatHistory.current,
+
+        {
+          role: "system",
+          content: `You have completed the task, now call the function ${tasks[currentTaskIndex].funcName}. Make sure you pass all arguments. The nextTask function has already been called, so do not call it`,
+        },
+      ],
+      getTaskFunction(currentTaskIndex)
+    );
+    console.log(newData);
+
+     setTicket((prev) => ({
+      ...prev,
+      ...newData,
+    }));
+    
+
+    console.log(ticket);
+    setConversationHistory((prevMessages) => [
+      ...prevMessages,
+      { role: "System", content: "Updated ticket data." },
+    ]);
+
+    setCurrentTaskIndex((currentTaskIndex) => {
+      return currentTaskIndex + 1;
+    });
+  }
 
   async function generateChatResponse() {
     // Add the user's message to the chat history
@@ -70,29 +99,15 @@ export default function Chatbot({ setTicket, ticket }) {
       openAPIChatHistory.current
     );
 
-    // If data has been found.
+    console.log(openAPIResponseMessage);
+
+    // Check if the AI intends to call a function
     if (openAPIResponseMessage.function_call) {
-      const ticketData = JSON.parse(
-        openAPIResponseMessage.function_call.arguments
-      );
-      setTicket((ticket) => {
-        return {
-          ...ticket,
-          ...ticketData,
-        };
-      });
+      const functionName = openAPIResponseMessage.function_call.name;
 
-      // Move onto the next question.
-      setCurrentTaskIndex((currentTaskIndex) => {
-        return currentTaskIndex + 1;
-      });
-
-      setConversationHistory((prevMessages) => [
-        ...prevMessages,
-        { role: "System", content: "Updated ticket data." },
-      ]);
-
-      return;
+      if (functionName === "nextTask") {
+        nextTask();
+      }
     } else {
       openAPIChatHistory.current = [
         ...openAPIChatHistory.current,
@@ -139,7 +154,11 @@ export default function Chatbot({ setTicket, ticket }) {
   return (
     <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full lg:w-[50%] flex flex-col p-8">
       <div className="flex flex-row justify-between items-center">
-        <img src="https://res.cloudinary.com/dheko2ynz/image/upload/v1698009828/Sap-logo_qfsey0.png" className="logo" alt="Logo" />
+        <img
+          src="https://res.cloudinary.com/dheko2ynz/image/upload/v1698009828/Sap-logo_qfsey0.png"
+          className="logo"
+          alt="Logo"
+        />
         <h1>
           SAP<span className="text-blue-400">assist</span>
         </h1>
@@ -195,10 +214,10 @@ export default function Chatbot({ setTicket, ticket }) {
 
         {submitting && (
           <div className=" speech speech-SAPassist">
-          <div className="spinner">
-            <div className="bounce1"></div>
-            <div className="bounce2"></div>
-            <div className="bounce3"></div>
+            <div className="spinner">
+              <div className="bounce1"></div>
+              <div className="bounce2"></div>
+              <div className="bounce3"></div>
             </div>
           </div>
         )}
