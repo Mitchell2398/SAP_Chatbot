@@ -55,6 +55,7 @@ export default function Chatbot({ setTicket, ticket }) {
   }, [currentTaskIndex]);
 
   async function nextTask() {
+    setSubmitting(true)
     const newData = await completeTicketOpenAi(
       [
         ...openAPIChatHistory.current,
@@ -66,6 +67,7 @@ export default function Chatbot({ setTicket, ticket }) {
       ],
       getTaskFunction(currentTaskIndex)
     );
+
     console.log(newData);
 
      setTicket((prev) => ({
@@ -75,20 +77,22 @@ export default function Chatbot({ setTicket, ticket }) {
     
 
     console.log(ticket);
-    setConversationHistory((prevMessages) => [
-      ...prevMessages,
-      { role: "System", content: "Updated ticket data." },
-    ]);
+    // setConversationHistory((prevMessages) => [
+    //   ...prevMessages,
+    //   { role: "System", content: "Updated ticket data." },
+    // ]);
 
     setCurrentTaskIndex((currentTaskIndex) => {
       return currentTaskIndex + 1;
     });
+    setSubmitting(false)
   }
 
   async function generateChatResponse() {
     // Add the user's message to the chat history
     openAPIChatHistory.current = [
       ...openAPIChatHistory.current,
+   
       {
         role: "user",
         content: inputValue,

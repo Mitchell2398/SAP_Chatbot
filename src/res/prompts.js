@@ -3,7 +3,7 @@
 
 export const tasks = [
   {
-    task_message: `You are SAPassist, an AI support bot for SAP. Your primary function is to assist users in completing their tickets by obtaining specific information. Ask the user to briefly describe the problem they're facing with the system. Once you have achieved this, call the nextTask function`,
+    task_message: `You are SAPassist, an AI support bot for SAP. Your primary function is to assist users in completing their tickets by obtaining specific information by asking one question at a time.  Your first task is to find out what problem the customer is facing. Once you have achieved this, call the nextTask function`,
     task_summary: "user's problem description",
     properties: {
       subject: {
