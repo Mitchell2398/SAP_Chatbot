@@ -21,7 +21,7 @@ export const getOpenAICompletion = async (messages) => {
             "type": "object",
             "properties": {},
           },
-          "required" : ["task completed"]
+          "required" : ["subject", "replication steps", ["permission"]]
         }
       ]
 
