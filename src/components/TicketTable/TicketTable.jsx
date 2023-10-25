@@ -67,7 +67,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
               </select>
             ) : (
               <h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">
-                {ticket.category}
+                {ticket.completed ? ticket.category : ""}
               </h1>
             )}
           </div>
@@ -82,7 +82,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
             />
           ) : (
             <h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">
-              {ticket.subject}
+              {ticket.completed ? ticket.subject : ""}
             </h1>
           )}
         </div>
@@ -100,7 +100,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
             />
           ) : (
             <h1 className="text-slate-300 px-3 text-left w-fill border-slate-700 whitespace-pre-line bg-slate-950">
-              {ticket.description}
+              {ticket.completed ? ticket.description : ""}
             </h1>
           )}
         </div>
