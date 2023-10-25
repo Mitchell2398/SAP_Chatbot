@@ -12,9 +12,7 @@ const taskMessages = generateTaskMessages();
 export default function Chatbot({ setTicket, ticket }) {
   const [inputValue, setInputValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
-
   const [conversationHistory, setConversationHistory] = useState([
     { role: "SAPassist", content: "How can I help you?" },
   ]);
@@ -26,33 +24,9 @@ export default function Chatbot({ setTicket, ticket }) {
     },
   ]);
 
-  useEffect(() => {
-    if (currentTaskIndex === 0) return;
 
-    openAPIChatHistory.current = [
-      {
-        role: "system",
-        content: taskMessages[currentTaskIndex],
-      },
-    ];
-    console.log(taskMessages[currentTaskIndex]);
-    console.log(conversationHistory);
 
-    getOpenAICompletion(openAPIChatHistory.current).then((message) => {
-      openAPIChatHistory.current = [
-        ...openAPIChatHistory.current,
-        {
-          role: "system",
-          content: message.content,
-        },
-      ];
 
-      setConversationHistory((prevMessages) => [
-        ...prevMessages,
-        { role: "SAPassist", content: message.content },
-      ]);
-    });
-  }, [currentTaskIndex]);
 
   async function nextTask() {
     setSubmitting(true)
@@ -88,8 +62,37 @@ export default function Chatbot({ setTicket, ticket }) {
     setSubmitting(false)
   }
 
+  // Can this be done in next task?
+  useEffect(() => {
+    if (currentTaskIndex === 0) return;
+
+    openAPIChatHistory.current = [
+      {
+        role: "system",
+        content: taskMessages[currentTaskIndex],
+      },
+    ];
+    console.log(taskMessages[currentTaskIndex]);
+    console.log(conversationHistory);
+
+    getOpenAICompletion(openAPIChatHistory.current).then((message) => {
+      openAPIChatHistory.current = [
+        ...openAPIChatHistory.current,
+        {
+          role: "system",
+          content: message.content,
+        },
+      ];
+
+      setConversationHistory((prevMessages) => [
+        ...prevMessages,
+        { role: "SAPassist", content: message.content },
+      ]);
+    });
+  }, [currentTaskIndex]);
+
   async function generateChatResponse() {
-    // Add the user's message to the chat history
+   console.log(openAPIChatHistory)
     openAPIChatHistory.current = [
       ...openAPIChatHistory.current,
    
@@ -103,7 +106,7 @@ export default function Chatbot({ setTicket, ticket }) {
       openAPIChatHistory.current
     );
 
-    console.log(openAPIResponseMessage);
+   
 
     // Check if the AI intends to call a function
     if (openAPIResponseMessage.function_call) {
