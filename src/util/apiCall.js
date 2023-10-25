@@ -33,7 +33,7 @@ export const getOpenAICompletion = async (messages) => {
 };
 
 
-export const completeTicketOpenAi = async (messages, func) => {
+export const completeTicketOpenAi = async (messages, func, setData) => {
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo-0613",
@@ -49,7 +49,7 @@ export const completeTicketOpenAi = async (messages, func) => {
             response.choices[0].message.function_call.arguments
         );
         console.log(functionArgs)
-        return functionArgs
+        setData((prev) => {return {...prev, ...functionArgs}})
 
       } else {
         console.log("no data")

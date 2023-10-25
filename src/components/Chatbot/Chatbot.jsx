@@ -25,44 +25,35 @@ export default function Chatbot({ setTicket, ticket }) {
   ]);
 
   async function nextTask() {
+    completeTicketOpenAi(
+      [
+        ...openAPIChatHistory.current,
+
+        {
+          role: "system",
+          content: `You have completed the task, now call the function ${tasks[currentTaskIndex].funcName}. Make sure you pass all arguments. The nextTask function has already been called, so do not call it`,
+        },
+      ],
+      getTaskFunction(currentTaskIndex)
+      ,
+      setTicket
+    );
+    
     if (currentTaskIndex < taskMessages.length - 1) {
-      setSubmitting(true);
-      const newData = completeTicketOpenAi(
-        [
-          ...openAPIChatHistory.current,
 
-          {
-            role: "system",
-            content: `You have completed the task, now call the function ${tasks[currentTaskIndex].funcName}. Make sure you pass all arguments. The nextTask function has already been called, so do not call it`,
-          },
-        ],
-        getTaskFunction(currentTaskIndex)
-      );
 
-      console.log(newData);
-
-      setTicket((prev) => ({
-        ...prev,
-        newData,
-      }));
-
-      console.log(ticket);
 
       setCurrentTaskIndex((currentTaskIndex) => {
         return currentTaskIndex + 1;
       });
-      setSubmitting(false);
-    } else {
-      setConversationHistory((prevMessages) => [
-        ...prevMessages,
-        { role: "System", content: "Updated ticket data." },
-      ]);
 
-      setTicket((prevTicket) => ({
-        ...prevTicket,
-        completed: true,
-      }));
+      setSubmitting(false);
+      return;
     }
+    setTicket((prevTicket) => ({
+      ...prevTicket,
+      completed: true,
+    }));
   }
 
   // Can this be done in next task?
@@ -75,9 +66,9 @@ export default function Chatbot({ setTicket, ticket }) {
         content: taskMessages[currentTaskIndex],
       },
     ];
-    console.log(taskMessages[currentTaskIndex]);
-    console.log(conversationHistory);
 
+
+    setSubmitting(true);
     getOpenAICompletion(openAPIChatHistory.current).then((message) => {
       openAPIChatHistory.current = [
         ...openAPIChatHistory.current,
@@ -91,8 +82,11 @@ export default function Chatbot({ setTicket, ticket }) {
         ...prevMessages,
         { role: "SAPassist", content: message.content },
       ]);
+
+      setSubmitting(false);
     });
   }, [currentTaskIndex]);
+
 
   async function generateChatResponse() {
     console.log(openAPIChatHistory);
@@ -114,7 +108,7 @@ export default function Chatbot({ setTicket, ticket }) {
       const functionName = openAPIResponseMessage.function_call.name;
 
       if (functionName === "nextTask") {
-        nextTask();
+        await nextTask();
       }
     } else {
       openAPIChatHistory.current = [
