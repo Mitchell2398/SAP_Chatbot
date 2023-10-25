@@ -30,7 +30,7 @@ export default function Chatbot({ setTicket, ticket }) {
 
   async function nextTask() {
     setSubmitting(true)
-    const newData = await completeTicketOpenAi(
+    const newData = completeTicketOpenAi(
       [
         ...openAPIChatHistory.current,
 

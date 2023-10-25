@@ -3,7 +3,7 @@
 
 export const tasks = [
   {
-    task_message: `You are an AI support bot for the company SAP, you help customers fill out a support ticket by asking one question at a time. Identify the problem the customer is facing call, then call nextTask function.`,
+    task_message: `You are an AI support bot for SAP's ERP system called business ByDesign. Your first task is to understand the problem of the user in a sentence, once your complete that task, call the nextTask function.`,
     task_summary: "user's problem description",
     properties: {
       subject: {
@@ -15,7 +15,7 @@ export const tasks = [
   },
 
   {
-    task_message: `You are an AI support bot for the company SAP, you help customers fill out a support ticket by asking one question at a time. You identified the problem and now you need to get enough information to create replication steps that resulted in the users problem.Once you have achieved this, call the nextTask function`,
+    task_message: `You are an AI support bot for SAP's ERP system called business ByDesign. Your next task is to obtain the users actions before the problem occured. (only ask one question at a time) Once you complete this task, call the nextTask function`,
     task_summary: "replication steps",
     properties: {
       description: {
