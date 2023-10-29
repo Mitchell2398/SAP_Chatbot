@@ -26,6 +26,7 @@ export default function Chatbot({ setTicket, ticket }) {
 
   async function nextTask() {
     completeTicketOpenAi(
+
       [
         ...openAPIChatHistory.current,
 
@@ -34,8 +35,8 @@ export default function Chatbot({ setTicket, ticket }) {
           content: `You have completed the task, now call the function ${tasks[currentTaskIndex].funcName}. Make sure you pass all arguments. The nextTask function has already been called, so do not call it`,
         },
       ],
-      getTaskFunction(currentTaskIndex)
-      ,
+      getTaskFunction(currentTaskIndex),
+      ticket,
       setTicket
     );
     
@@ -54,6 +55,7 @@ export default function Chatbot({ setTicket, ticket }) {
       ...prevTicket,
       completed: true,
     }));
+    
   }
 
   // Can this be done in next task?
