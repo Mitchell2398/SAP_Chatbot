@@ -14,7 +14,7 @@ export default function Chatbot({ setTicket, ticket }) {
   const [submitting, setSubmitting] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [conversationHistory, setConversationHistory] = useState([
-    { role: "SAPassist", content: "How can I help you?" },
+    { role: "SAPassist", content: "Hello, How can I help you?" },
   ]);
 
   const openAPIChatHistory = useRef([
