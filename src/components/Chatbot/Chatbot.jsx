@@ -24,6 +24,10 @@ export default function Chatbot({ setTicket, ticket }) {
     },
   ]);
 
+
+  // Calculate the width as a percentage
+  const progress = ticket.completed?100:(currentTaskIndex / tasks.length) * 100;
+
   async function nextTask() {
     completeTicketOpenAi(
 
@@ -157,6 +161,7 @@ export default function Chatbot({ setTicket, ticket }) {
 
   return (
     <div className="bg-slate-950 rounded-2xl max-h-[80%] h-[80%] w-full lg:w-[50%] flex flex-col p-8">
+
       <div className="flex flex-row justify-between items-center">
         <img
           src="https://res.cloudinary.com/dheko2ynz/image/upload/v1698009828/Sap-logo_qfsey0.png"
@@ -168,7 +173,9 @@ export default function Chatbot({ setTicket, ticket }) {
         </h1>
         <p className="supportId">User ID: 2344</p>
       </div>
-
+      <div className="w-full bg-gray-200 rounded-full mt-3 h-2.5 dark:bg-gray-700">
+        <div className="h-2.5 rounded-full transition-all duration-[2s]" style={{width:`${progress}%`, backgroundColor:ticket.completed?"#059669":"#3b82f6"}}></div>
+      </div>
       <div
         className="chatbot-conversation-container flex flex-col-reverse gap-3 flex-grow"
         id="chatbot-conversation"
