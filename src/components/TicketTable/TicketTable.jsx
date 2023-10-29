@@ -66,7 +66,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
                 <option value="Other">Other</option>
               </select>
             ) : (
-              <h1 className="text-slate-300 text-center w-fill border-slate-700 bg-slate-950">
+              <h1 className="text-slate-300 text-center border-slate-700 bg-slate-950">
                 {ticket.completed ? ticket.category : ""}
               </h1>
             )}
@@ -76,7 +76,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
           <h1 className="text-lg text-slate-200 font-semibold">Subject</h1>
           {ticket.editable ? (
             <input
-              className="text-slate-300 border py-2 rounded-lg text-center w-fill border-slate-700 bg-slate-950"
+              className="text-slate-300 border py-2 rounded-lg text-center w-full border-slate-700 bg-slate-950"
               value={ticket.subject}
               onChange={(event) => handleFieldChange(event, "subject")}
             />
