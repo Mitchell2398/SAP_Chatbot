@@ -17,7 +17,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold mt-1">Current Ticket</h1>
           <h1 className="font-semibold text-xs text-slate-500">
-            Perimission Granted:
+            Permission Granted:
             {ticket.permission ? " Yes" : " No"}
           </h1>
         </div>
@@ -42,7 +42,7 @@ export const TicketTable = ({ setTicket, ticket }) => {
           </div>
           {ticket.editable ? (
             <h1 className="rounded-md text-sm text-red-700 font-semibold mt-1">
-              Editing
+              Editting
             </h1>
           ) : (
             <></>
