@@ -1,7 +1,6 @@
 import { TicketTable } from "./components/TicketTable/TicketTable";
 import Chatbot from "./components/Chatbot/Chatbot";
 import { useState } from "react";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 function App() {
   const [ticket, setTicket] = useState({
@@ -29,20 +28,31 @@ function App() {
         <TicketTable ticket={ticket} setTicket={setTicket} />
       </div>
       <div className="flex flex-row pb-[3rem] items-center gap-8 justify-center">
-        <ContentCopyIcon
-          className="text-slate-300 text-3xl cursor-pointer"
-          onClick={() => navigator.clipboard.writeText("Hello , I am having a problem creating a new project stock order.")}
+        <div
+          className="bg-emerald-100 rounded-full w-5 h-5  cursor-pointer"
+          onClick={() =>
+            navigator.clipboard.writeText(
+              "Hello , I am having a problem creating a new project stock order."
+            )
+          }
         />
 
-        <ContentCopyIcon
-          color="white"
-          className="text-slate-300 text-3xl  cursor-pointer"
-          onClick={() => navigator.clipboard.writeText("When I try to create a new project stock order, it says \"Project stock order not created, selection includes only services\"")}
+        <div
+          className="bg-emerald-200 rounded-full w-5 h-5  cursor-pointer"
+          onClick={() =>
+            navigator.clipboard.writeText(
+              'When I try to create a new project stock order, it says "Project stock order not created, selection includes only services"'
+            )
+          }
         />
 
-        <ContentCopyIcon
-          className="text-slate-300 text-3xl  cursor-pointer"
-          onClick={() => navigator.clipboard.writeText("Okay, I navigated to project management, then opened the projects view, searched for the project ID. Then I clicked the edit button , went to product overview. Then i selected a product and clicked create project stock order")}
+        <div
+          className="bg-emerald-300 rounded-full w-5 h-5  cursor-pointer"
+          onClick={() =>
+            navigator.clipboard.writeText(
+              "Okay, I navigated to project management, then opened the projects view, searched for the project ID. Then I clicked the edit button , went to product overview. Then i selected a product and clicked create project stock order"
+            )
+          }
         />
       </div>
     </div>
