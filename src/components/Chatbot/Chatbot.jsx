@@ -250,6 +250,7 @@ export default function Chatbot({ setTicket, ticket }) {
           id="user-input"
           onChange={(e) => setInputValue(e.target.value)}
           value={inputValue}
+          disabled={ticket.completed}
           required
         />
         <button
