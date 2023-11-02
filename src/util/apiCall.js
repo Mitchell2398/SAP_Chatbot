@@ -5,8 +5,11 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+// Retries an ASYNC function. 
+// If the promise is rejected, OR IF IT TAKES LONGER THAN timeoutDelay
+// it will retry the function call up to maxRetries times.
 const maxRetries = 10;
-const retryDelay = 4500;
+const timeoutDelay = 4500;
 
 const retryAsyncFunc = async (attempt) => {
   let retries = 0;
@@ -21,7 +24,7 @@ const retryAsyncFunc = async (attempt) => {
           " of " +
           maxRetries +
           ". With timeout " +
-          retryDelay +
+          timeoutDelay +
           "ms"
       );
       const response = await Promise.race([
@@ -30,7 +33,7 @@ const retryAsyncFunc = async (attempt) => {
           setTimeout(() => {
             resolve();
             retries++;
-          }, retryDelay)
+          }, timeoutDelay+retries*(timeoutDelay/8))
         ),
       ]);
 
@@ -39,7 +42,7 @@ const retryAsyncFunc = async (attempt) => {
           
           (response === "Success"?"TICKET DATA: ":"CHAT MESSAGE: ") +"OpenAPI Request: Success, Took " +
             (
-              (new Date().getTime() - timeMs + retryDelay * retries) /
+              (new Date().getTime() - timeMs + timeoutDelay * retries) /
               1000
             ).toFixed(2) +
             "s total and " +
