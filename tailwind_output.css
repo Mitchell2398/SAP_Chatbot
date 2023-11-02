@@ -590,6 +590,14 @@ video {
   max-height: 100vh;
 }
 
+.max-h-\[70\%\] {
+  max-height: 70%;
+}
+
+.max-h-\[90\%\] {
+  max-height: 90%;
+}
+
 .w-full {
   width: 100%;
 }

@@ -24,7 +24,7 @@ function App() {
   };
   return (
     <div style={bgImage} className="flex flex-col ">
-      <div className="flex flex-col lg:flex-row pt-5 px-5 splash-bg bg-transparent w-screen gap-5 flex-grow items-center">
+      <div className="flex flex-col lg:flex-row pt-5 px-5 splash-bg bg-transparent max-h-[90%] w-screen gap-5 flex-grow items-center">
         <Chatbot setTicket={setTicket} ticket={ticket} />
         <TicketTable ticket={ticket} setTicket={setTicket} />
       </div>
