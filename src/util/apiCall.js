@@ -140,7 +140,7 @@ const setCategoryandPriority = async (ticket, setData) => {
               ticket.description +
               " and subject: " +
               ticket.subject +
-              ". Complete the ticket immediately by calling the getCategoryandPriority function.",
+              ". Make a function call now.",
           },
         ],
         presence_penalty: -0.3,
