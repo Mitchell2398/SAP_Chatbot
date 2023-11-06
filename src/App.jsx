@@ -13,14 +13,16 @@ function App() {
     submitted: false,
   });
 
+  const imgUrl = "https://res.cloudinary.com/dheko2ynz/image/upload/v1699304082/bg-image2_xktyn5.png";
   const bgImage = {
-    backgroundImage: `url("/bg-image2.png")`,
+    backgroundImage: `url(${imgUrl})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     height: "100vh",
     width: "100vw",
   };
+
   return (
     <div style={bgImage} className="flex flex-col ">
       <div className="flex flex-col lg:flex-row pt-5 px-5 splash-bg bg-transparent max-h-[90%] w-screen gap-5 flex-grow items-center">
