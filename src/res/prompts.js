@@ -3,7 +3,7 @@
 
 export const tasks = [
   {
-    task_message: `Ask the user 1 or 2 questions to understand the issue the customer faces in a simple sentence. For example "error when creating new stock order". Once you complete this task, call the nextTask function`,
+    task_message: `Ask the user a few questions to understand the issue the customer faces in a simple sentence. For example "error when creating new stock order". Once you complete this task, call the nextTask function`,
     task_summary: "user's problem description",
     properties: {
       subject: {
